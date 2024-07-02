@@ -1,0 +1,15 @@
+export const colors = {
+    white: "#ffffff",
+    black: "#000000",
+    dimGray: "#808080",
+    duskBlue: "#7581B3",
+    darkBlue: "#2B4895",
+    iconGray: "#7E7E7E",
+    platinum: "#E5E4E2",
+    leftGradientWhite: "#FDFEFE",
+    rightGradientBlue: "#CEE1FF",
+    rightGradientShimmerBlue: "#BEBEBE",
+    opacityOverlay: "#00000080",
+    buttonBorder: "#00000020",
+    tabBarActiveBgColor: "#00000010",
+}
