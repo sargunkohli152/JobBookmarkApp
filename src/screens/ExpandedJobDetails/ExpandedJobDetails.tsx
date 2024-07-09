@@ -227,7 +227,7 @@ const ExpandedJobDetails = ({ route }: { route: RouteParamsType }) => {
             </Text>
             <Text
               style={styles.titleDetails}
-              numberOfLines={2}
+              numberOfLines={1}
             >
               {item?.title}
             </Text>
@@ -404,12 +404,11 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-    elevation: 5,
   }),
   bookmarkButtonText: (isBookmarked: boolean) => ({
     color: isBookmarked ? colors.darkBlue : colors.white,
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: 17,
+    fontWeight: '600',
   }),
   activityIndicatorContainer: {
     ...StyleSheet.absoluteFillObject,

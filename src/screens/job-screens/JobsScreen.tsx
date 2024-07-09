@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -16,6 +16,7 @@ import { FlashList } from "@shopify/flash-list";
 import CustomModal from "../../components/organisms/CustomModal";
 import { dummyShimmerData } from "../../dummyData/dummyShimmerData";
 import NetInfo from "@react-native-community/netinfo";
+import ListHeader from "../../components/molecules/ListHeader";
 
 const estimatedItemSize = 100;
 const keyExtractor = (item: object, index: number) => `${(item as any)?.id}${index}`;
@@ -24,6 +25,7 @@ const JobsScreen = () => {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isConnected, setIsConnected] = useState<boolean | null>(false);
+  const [searchText, setSearchText] = useState<string>('');
   const flashlistRef = useRef<any>();
 
   useEffect(() => {
@@ -42,7 +44,7 @@ const JobsScreen = () => {
     //one api, we'll keep it here for simplicity (for time being).
     try {
       const response = await axios.get(`https://testapi.getlokalapp.com/common/jobs?page=${pageParam}`);
-      return response.data.results ?? []; 
+      return response.data.results ?? [];
     } catch (error) {
       setIsModalOpen(true);
       return [];
@@ -69,6 +71,7 @@ const JobsScreen = () => {
     },
   });
 
+  const filteredJobs = searchText.length > 3 ? data?.pages?.flatMap((page) => page).filter((job) => job?.job_role?.toLowerCase().includes(searchText.toLowerCase())) : data?.pages?.flatMap((page) => page);
 
   const renderEmpty = () => {
     return (
@@ -78,12 +81,12 @@ const JobsScreen = () => {
     )
   };
 
-  const renderJobCard = ({ item }: {item: object}) => {
+  const renderJobCard = useCallback(({ item }: {item: object}) => {
     if(!item.hasOwnProperty('job_role')){
       return null;
     }
     return <JobDetails item={item} isLoading={isLoading}/>
-  }
+  }, [data]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -98,6 +101,13 @@ const JobsScreen = () => {
 
   const onClose = () => {
     setIsModalOpen(false);
+  }
+
+  const handleSearch = (text: string) => {
+    if(text.length < 3){
+      return;
+    }
+    setSearchText(text);
   }
 
   if (status === 'error') {
@@ -138,7 +148,7 @@ const JobsScreen = () => {
       <FlashList
         ref={flashlistRef}
         estimatedItemSize={estimatedItemSize}
-        data={data?.pages.flatMap(page => page)}
+        data={filteredJobs}
         renderItem={renderJobCard}
         keyExtractor={keyExtractor}
         showsVerticalScrollIndicator={false}
@@ -151,7 +161,7 @@ const JobsScreen = () => {
             onRefresh={onRefresh}
           />
         }
-        ListHeaderComponent={<View style={{ marginTop: 10 }} />}
+        ListHeaderComponent={<ListHeader handleSearch={handleSearch}/>}
         ListFooterComponent={
           hasNextPage && isFetchingNextPage ? (
             <View style={styles.moreLoader}>
